@@ -1,3 +1,192 @@
+#Find-s
+import pandas as pd
+import numpy as np
+data = pd.read_csv("data.csv")
+print(data)
+
+#making an array of all the attributes
+concepts = np.array(data)[:,:-1]
+print(" The attributes are: ",concepts)
+
+#segragating the target that has positive and negative examples
+target = np.array(data)[:,-1]
+print("The target is: ",target)
+
+#training function to implement find-s algorithm
+def train(c,t):
+    for i, val in enumerate(t):
+        if val == "Yes":
+            specific_hypothesis = c[i]
+            break
+             
+    for i, val in enumerate(c):
+        if t[i] == "Yes":
+            for x in range(len(specific_hypothesis)):
+                if val[x] != specific_hypothesis[x]:
+                    specific_hypothesis[x] = '?'
+                else:
+                    pass
+                 
+    return specific_hypothesis
+
+#obtaining the final hypothesis
+print(" The final hypothesis is:",train(concepts,target))
+
+------------------------------------------------------------------------------------------------------
+
+
+#CANDIDATE ELIMINATION ALGORITHM
+import numpy as np 
+import pandas as pd
+
+# Reading the data from CSV file
+data = pd.read_csv('data.csv')
+concepts = np.array(data.iloc[:,:-1])
+print("\nInstances are:\n",concepts)
+
+target = np.array(data.iloc[:,-1])
+print("\nTarget Values are: ",target)
+
+def train(concepts, target):
+  for i, h in enumerate(concepts):
+    if target[i]=="Yes":
+      specific_h=concepts[i]
+      break
+
+  print("Intialization of specific_h and genral_h")
+  print(specific_h)     
+  general_h = [["?" for i in range(len(specific_h))] for i in range(len(specific_h))]
+  print(general_h) 
+# Checking if the hypothesis has a positive target 
+  for i,h in enumerate(concepts):
+    if target[i]=="Yes":
+      for x in range(len(specific_h)):
+        if h[x]!=specific_h[x]:
+          #Change values S and G
+          specific_h[x]='?'
+          general_h[x][x]='?'
+## Checking if the hypothesis has a negative target 
+    if target[i]=='No':
+       for x in range(len(specific_h)):
+         # for negative hypothisis change values only in G
+         if h[x]!=specific_h[x]:
+           general_h[x][x]=specific_h[x]
+         else:
+           general_h[x][x]='?'
+  print("steps of Candidate Elimination Algorithm",i+1) 
+  print(specific_h)  
+  print(general_h)
+  # find indices where we have empty rows, meaning that are unchanged 
+  indices = [i for i, val in enumerate(general_h) if val == ['?', '?', '?', '?', '?', '?']] 
+  for i in indices:
+    # remove those rows from general_h
+    general_h.remove(['?', '?', '?', '?', '?', '?'])
+# return final values 
+  return specific_h, general_h       
+s_final, g_final = train(concepts, target)
+# displaying Specific_hypothesis
+print("Final Specific_h: ", s_final, sep="\n")
+# displaying Generalized_Hypothesis
+print("Final General_h: ", g_final, sep="\n") 
+------------------------------------------------------------------------------------------------------
+
+SIMPLE LINEAR REGRESSION
+#.1
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+#2.
+
+data=pd.read_csv("headbrain6.csv")
+data.head()
+
+x=data.iloc[:,2:3].values  #INPUT VARIABLE(Head Size(cm^3))
+
+y=data.iloc[:,3:4].values   #OUTPUT VARIABLE(Brain Weight(grams))
+  
+
+#3.
+from sklearn .model_selection import train_test_split
+x_train, x_test, y_train, y_test= train_test_split(x,y,test_size=1/4, random_state=0)
+
+#4.
+from sklearn.linear_model import LinearRegression
+reg=LinearRegression().fit(x_train,y_train)
+reg
+
+#5.
+
+y_pred=reg.predict(x_test)
+y_pred
+
+
+#6.
+
+plt.scatter(x_train,y_train,c='red')
+plt.xlabel("Head Size")
+plt.ylabel("Brain Weight")
+plt.show()
+
+# To See the relationship between the predicted brain weight values using scatter plot.(
+
+plt.plot(x_test,y_pred)
+plt.scatter(x_test,y_test,c='red')
+plt.xlabel("Head Size")
+plt.ylabel("Brain Weight")
+plt.show()
+
+
+#7.
+
+print("Final RMSE Value",np.sqrt(np.mean((y_test-y_pred)**2)))
+
+------------------------------------------------------------------------------------------------------
+
+#Decision tree Classifier
+
+from sklearn.datasets import load_iris
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.tree import plot_tree
+from sklearn.tree import export_text
+
+
+iris = load_iris()
+iris.data
+
+iris.target
+
+X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, test_size=0.5, random_state=0)
+
+
+print("x_train\n",X_train)
+print("y_train\n",y_train)
+print("x_test\n",X_test)
+print("y_test\n",y_test)
+
+
+
+clf = DecisionTreeClassifier(random_state=0,max_depth=2)
+clf.fit(X_train,y_train)
+
+clf.predict(X_test)
+
+print("Avg. Accuracy",clf.score(X_train,y_train))
+
+
+
+plot_tree(clf)
+r = export_text(clf, feature_names=iris['feature_names'])
+print(r)
+
+
+
+
+  
+------------------------------------------------------------------------------------------------------
+
+
 #SVM
 #Data Pre-processing Step  
 # importing libraries  
@@ -72,11 +261,7 @@ play windy
 # P(yes/X') = p(yes) 9/14 *  [ P(sunny/yes)* p(hot/yes) * p(high/yes)* p(true/yes)] =0.004
 # P(no/X')
 
-p_yes = ct_play.iloc[1,0] /ct_play.iloc[2,0] * 
-ct_outlook.iloc[2,1]/ct_outlook.iloc[3,1]
-* ct_temp.iloc[1,1]/ct_temp.iloc[3,1]
-*ct_humidity.iloc[0,1]/ct_humidity.iloc[2,1]
-*ct_windy.iloc[1,1]/ct_windy.iloc[2,1] 
+p_yes = ct_play.iloc[1,0] /ct_play.iloc[2,0] * ct_outlook.iloc[2,1]/ct_outlook.iloc[3,1]* ct_temp.iloc[1,1]/ct_temp.iloc[3,1]*ct_humidity.iloc[0,1]/ct_humidity.iloc[2,1]*ct_windy.iloc[1,1]/ct_windy.iloc[2,1] 
 
 print('The probability of tennis played with given conditions is', '%.3f'%p_yes)
 
@@ -84,11 +269,7 @@ print('The probability of tennis played with given conditions is', '%.3f'%p_yes)
 # calculation of P(no/(sunny,hot,high,true))= p(no) 
 #*  [ P(sunny/no)* p(hot/no) * p(high/no)* p(true/no)  ]
 
-p_no = ct_play.iloc[0,0] /ct_play.iloc[2,0] 
-* ct_outlook.iloc[2,0]/ct_outlook.iloc[3,0] 
-* ct_temp.iloc[1,0]/ct_temp.iloc[3,0]
-*ct_humidity.iloc[0,0]/ct_humidity.iloc[2,0]
-*ct_windy.iloc[1,0]/ct_windy.iloc[2,0] 
+p_no = ct_play.iloc[0,0] /ct_play.iloc[2,0] * ct_outlook.iloc[2,0]/ct_outlook.iloc[3,0] * ct_temp.iloc[1,0]/ct_temp.iloc[3,0]*ct_humidity.iloc[0,0]/ct_humidity.iloc[2,0]*ct_windy.iloc[1,0]/ct_windy.iloc[2,0] 
 
 print('The probability of tennis not played with given conditions is', '%.3f'%p_no)
 
